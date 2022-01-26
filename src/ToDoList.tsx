@@ -8,17 +8,31 @@ interface IForm {
   username: string;
   password: string;
   passwordConfirmation: string;
+  extraError?: string;
 }
 
 function ToDoList() {
-  const { register, watch, handleSubmit, formState } = useForm<IForm>({
-    defaultValues: {
-      email: "@naver.com",
-    },
-  });
+  const { register, watch, handleSubmit, formState, setError } = useForm<IForm>(
+    {
+      defaultValues: {
+        email: "@naver.com",
+      },
+    }
+  );
   console.log(formState.errors);
-  const onValid = (data: any) => {
-    console.log(data);
+  const onValid = (data: IForm) => {
+    if (data.password !== data.passwordConfirmation) {
+      setError(
+        "passwordConfirmation",
+        {
+          message: "Passwords are not the same.",
+        },
+        {
+          shouldFocus: true,
+        }
+      );
+      setError("extraError", { message: "Server offline" });
+    }
   };
   return (
     <div>
@@ -32,7 +46,15 @@ function ToDoList() {
       >
         <input
           type="text"
-          {...register("firstName")}
+          {...register("firstName", {
+            required: "Write here",
+            validate: {
+              noNico: (value) =>
+                value.includes("nico") ? "no nicos allowed" : true,
+              noNicL: (value) =>
+                value.includes("nick") ? "no nicks allowed" : true,
+            },
+          })}
           placeholder="First Name"
         />
         <span>{formState.errors?.firstName?.message}</span>
@@ -74,6 +96,7 @@ function ToDoList() {
           placeholder="Password Confirmation"
         />
         <span>{formState.errors?.passwordConfirmation?.message}</span>
+        <span>{formState.errors?.extraError?.message}</span>
         <button>Add</button>
       </form>
     </div>
