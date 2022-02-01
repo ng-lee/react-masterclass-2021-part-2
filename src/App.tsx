@@ -51,6 +51,11 @@ table {
 	border-collapse: collapse;
 	border-spacing: 0;
 }
+
+body {
+	background-color: ${(props) => props.theme.bgColor};
+	color: ${(props) => props.theme.textColor};
+}
 `;
 
 function App() {
